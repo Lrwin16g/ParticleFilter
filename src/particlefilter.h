@@ -1,7 +1,7 @@
 #ifndef PARTICLEFILTER_H
 #define PARTICLEFILTER_H
 
-// 状態モデルの仮想クラス
+// 状態モデルの基底クラス
 class StateModel
 {
 public:
