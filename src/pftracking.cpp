@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
     
     int particleNum = 1000;
     
-    StateModel *model = new RandomModel(5.0);
-    //StateModel *model = new LinearModel(3.0);
+    //StateModel *model = new RandomModel(5.0);
+    StateModel *model = new LinearModel(3.0);
     ParticleFilter filter(particleNum, model);
     double **boundary = new double*[model->dimension()];
     for (int i = 0; i < model->dimension(); ++i) {
@@ -101,10 +101,10 @@ int main(int argc, char *argv[])
     boundary[0][1] = frame.cols - 1;
     boundary[1][0] = 0.0;
     boundary[1][1] = frame.rows - 1;
-    /*boundary[2][0] = -3.0;
+    boundary[2][0] = -3.0;
     boundary[2][1] = 3.0;
     boundary[3][0] = -3.0;
-    boundary[3][1] = 3.0;*/
+    boundary[3][1] = 3.0;
     
     // パーティクルの初期化
     filter.initParticles(boundary);
@@ -152,7 +152,8 @@ int main(int argc, char *argv[])
 	}
 #endif
 	// フィルタリング・リサンプリング
-	filter.filterParticles();
+	//filter.filterParticles();
+	filter.resampleMultiDist();
     }
     
     for (int i = 0; i < model->dimension(); ++i) {
