@@ -63,7 +63,9 @@ RandomModel::RandomModel(double sigma)
 }
 
 ParticleFilter::ParticleFilter(int particleNum, StateModel *model)
-    : particleNum_(particleNum), model_(model), particles_(NULL), newParticles_(NULL), likelihood_(NULL), estimateResult_(NULL)
+    : particleNum_(particleNum), model_(model), particles_(NULL),
+      newParticles_(NULL), likelihood_(NULL), estimateResult_(NULL),
+      multidist_(NULL)
 {
     srand(time(NULL));
     
@@ -76,6 +78,7 @@ ParticleFilter::ParticleFilter(int particleNum, StateModel *model)
 
     likelihood_ = new double[particleNum_];
     estimateResult_ = new double[model_->dimension()];
+    multidist_ = new double[particleNum_];
 }
 
 ParticleFilter::~ParticleFilter()
@@ -97,6 +100,9 @@ ParticleFilter::~ParticleFilter()
     }
     if (estimateResult_ != NULL) {
 	delete[] estimateResult_;
+    }
+    if (multidist_ != NULL) {
+	delete[] multidist_;
     }
 }
 
@@ -184,6 +190,26 @@ void ParticleFilter::filterParticles()
 	    for (int j = 0; j < model_->dimension(); ++j) {
 		newParticles_[count + i][j] = particles_[maxIndex][j];
 	    }
+	}
+    }
+}
+
+// 多項分布に従ってリサンプリング
+void ParticleFilter::resampleMultiDist()
+{
+    multidist_[0] = likelihood_[0];
+    for (int i = 1; i < particleNum_; ++i) {
+	multidist_[i] = multidist_[i - 1] + likelihood_[i];
+    }
+    
+    for (int i = 0; i < particleNum_; ++i) {
+	double prob = ml::randu();
+	int index = 0;
+	while (multidist_[++index] < prob) {
+	    ;
+	}
+	for (int j = 0; j < model_->dimension(); ++j) {
+	    newParticles_[i][j] = particles_[index][j];
 	}
     }
 }

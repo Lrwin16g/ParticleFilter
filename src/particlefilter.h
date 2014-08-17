@@ -42,6 +42,7 @@ public:
     void normalizeLikelihood();
     void estimate();
     void filterParticles();
+    void resampleMultiDist();
     
     inline int dimension() const {return model_->dimension();}
     
@@ -63,6 +64,7 @@ private:
     double **newParticles_;
     double *likelihood_;
     double *estimateResult_;
+    double *multidist_;
     
     StateModel *model_;
     
