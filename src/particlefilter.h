@@ -42,7 +42,7 @@ public:
     void normalizeLikelihood();
     void estimate();
     void filterParticles();
-    void resampleMultiDist();
+    void resampleMultinomial();
     
     inline int dimension() const {return model_->dimension();}
     

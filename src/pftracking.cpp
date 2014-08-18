@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 #endif
 	// フィルタリング・リサンプリング
 	//filter.filterParticles();
-	filter.resampleMultiDist();
+	filter.resampleMultinomial();
     }
     
     for (int i = 0; i < model->dimension(); ++i) {

@@ -195,7 +195,7 @@ void ParticleFilter::filterParticles()
 }
 
 // 多項分布に従ってリサンプリング
-void ParticleFilter::resampleMultiDist()
+void ParticleFilter::resampleMultinomial()
 {
     multidist_[0] = likelihood_[0];
     for (int i = 1; i < particleNum_; ++i) {
@@ -203,7 +203,7 @@ void ParticleFilter::resampleMultiDist()
     }
     
     for (int i = 0; i < particleNum_; ++i) {
-	double prob = ml::randu();
+	double prob = ml::randu(0.0, 1.0);
 	int index = 0;
 	while (multidist_[++index] < prob) {
 	    ;
