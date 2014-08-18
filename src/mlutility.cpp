@@ -3,11 +3,6 @@
 #include <cstdlib>
 #include <cmath>
 
-double ml::randu()
-{
-    return (static_cast<double>(rand()) + 1.0) / (static_cast<double>(RAND_MAX) + 2.0);
-}
-
 double ml::randu(double min, double max)
 {
     double z = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * (max - min);
@@ -16,6 +11,6 @@ double ml::randu(double min, double max)
 
 double ml::randn(double mean, double stddev)
 {
-    double z = sqrt(-2.0 * log(ml::randu())) * sin(2.0 * M_PI * randu());
+    double z = sqrt(-2.0 * log(ml::randu(0.0, 1.0))) * sin(2.0 * M_PI * randu(0.0, 1.0));
     return mean + stddev * z;
 }
