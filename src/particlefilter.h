@@ -16,7 +16,7 @@ protected:
     double sigma_;
 };
 
-// 線形モデル
+// 等速直線運動モデル
 class LinearModel : public StateModel
 {
 public:
