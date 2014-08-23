@@ -22,16 +22,6 @@ StateModel::~StateModel()
     }
 }
 
-void StateModel::translateState(const double *src, double *dst)
-{
-    for (int i = 0; i < dimension_; ++i) {
-	dst[i] = ml::randn(0.0, sigma_);
-	for (int j = 0; j < dimension_; ++j) {
-	    dst[i] += stateTransMat_[i][j] * src[j];
-	}
-    }
-}
-
 LinearModel::LinearModel(double sigma)
     : StateModel(sigma)
 {
@@ -50,6 +40,58 @@ LinearModel::LinearModel(double sigma)
     stateTransMat_[3][2] = 0.0; stateTransMat_[3][3] = 1.0;
 }
 
+void LinearModel::translateState(const double *src, double *dst)
+{
+    for (int i = 0; i < dimension_; ++i) {
+	dst[i] = 0.0;
+	for (int j = 0; j < dimension_; ++j) {
+	    dst[i] += stateTransMat_[i][j] * src[j];
+	}
+    }
+    dst[2] += ml::randn(0.0, sigma_);
+    dst[3] += ml::randn(0.0, sigma_);
+}
+
+AccelerateModel::AccelerateModel(double sigma)
+    : StateModel(sigma)
+{
+    dimension_ = 6;
+    stateTransMat_ = new double*[dimension_];
+    for (int i = 0; i < dimension_; ++i) {
+	stateTransMat_[i] = new double[dimension_];
+    }
+    stateTransMat_[0][0] = 1.0; stateTransMat_[0][1] = 0.0;
+    stateTransMat_[0][2] = 1.0; stateTransMat_[0][3] = 0.0;
+    stateTransMat_[0][4] = 0.0; stateTransMat_[0][5] = 0.0;
+    stateTransMat_[1][0] = 0.0; stateTransMat_[1][1] = 1.0;
+    stateTransMat_[1][2] = 0.0; stateTransMat_[1][3] = 1.0;
+    stateTransMat_[1][4] = 0.0; stateTransMat_[1][5] = 0.0;
+    stateTransMat_[2][0] = 0.0; stateTransMat_[2][1] = 0.0;
+    stateTransMat_[2][2] = 1.0; stateTransMat_[2][3] = 0.0;
+    stateTransMat_[2][4] = 1.0; stateTransMat_[2][5] = 0.0;
+    stateTransMat_[3][0] = 0.0; stateTransMat_[3][1] = 0.0;
+    stateTransMat_[3][2] = 0.0; stateTransMat_[3][3] = 1.0;
+    stateTransMat_[3][4] = 0.0; stateTransMat_[3][5] = 1.0;
+    stateTransMat_[4][0] = 0.0; stateTransMat_[4][1] = 0.0;
+    stateTransMat_[4][2] = 0.0; stateTransMat_[4][3] = 0.0;
+    stateTransMat_[4][4] = 1.0; stateTransMat_[4][5] = 0.0;
+    stateTransMat_[5][0] = 0.0; stateTransMat_[5][1] = 0.0;
+    stateTransMat_[5][2] = 0.0; stateTransMat_[5][3] = 0.0;
+    stateTransMat_[5][4] = 0.0; stateTransMat_[5][5] = 1.0;
+}
+
+void AccelerateModel::translateState(const double *src, double *dst)
+{
+    for (int i = 0; i < dimension_; ++i) {
+	dst[i] = 0.0;
+	for (int j = 0; j < dimension_; ++j) {
+	    dst[i] += stateTransMat_[i][j] * src[j];
+	}
+    }
+    dst[4] += ml::randn(0.0, sigma_);
+    dst[5] += ml::randn(0.0, sigma_);
+}
+
 RandomModel::RandomModel(double sigma)
     : StateModel(sigma)
 {
@@ -60,6 +102,16 @@ RandomModel::RandomModel(double sigma)
     }
     stateTransMat_[0][0] = 1.0; stateTransMat_[0][1] = 0.0;
     stateTransMat_[1][0] = 0.0; stateTransMat_[1][1] = 1.0;
+}
+
+void RandomModel::translateState(const double *src, double *dst)
+{
+    for (int i = 0; i < dimension_; ++i) {
+	dst[i] = ml::randn(0.0, sigma_);
+	for (int j = 0; j < dimension_; ++j) {
+	    dst[i] += stateTransMat_[i][j] * src[j];
+	}
+    }
 }
 
 ParticleFilter::ParticleFilter(int particleNum, StateModel *model)
@@ -148,8 +200,8 @@ void ParticleFilter::estimate()
     }
 }
 
-// フィルタリング
-void ParticleFilter::filterParticles()
+// リサンプリング
+void ParticleFilter::resample()
 {
     double maxLikelihood = 0.0;
     int maxIndex = 0;
@@ -203,6 +255,34 @@ void ParticleFilter::resampleMultinomial()
     }
     
     for (int i = 0; i < particleNum_; ++i) {
+	double prob = ml::randu(0.0, 1.0);
+	int index = 0;
+	while (multidist_[++index] < prob) {
+	    ;
+	}
+	for (int j = 0; j < model_->dimension(); ++j) {
+	    newParticles_[i][j] = particles_[index][j];
+	}
+    }
+}
+
+void ParticleFilter::resampleResidual()
+{
+    double accum = 0.0;
+    int count = 0;
+    for (int i = 0; i < particleNum_; ++i) {
+	accum += likelihood_[i];
+	multidist_[i] = accum;
+	int restoreNum = floor(likelihood_[i] * particleNum_);
+	for (int j = 0; j < restoreNum; ++j) {
+	    for (int k = 0; k < model_->dimension(); ++k) {
+		newParticles_[count][k] = particles_[i][k];
+	    }
+	    count++;
+	}
+    }
+    
+    for (int i = count; i < particleNum_; ++i) {
 	double prob = ml::randu(0.0, 1.0);
 	int index = 0;
 	while (multidist_[++index] < prob) {

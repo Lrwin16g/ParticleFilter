@@ -7,7 +7,7 @@ class StateModel
 public:
     StateModel(double sigma);
     virtual ~StateModel();
-    void translateState(const double *src, double *dst);
+    virtual void translateState(const double *src, double *dst) = 0;
     inline int dimension() const {return dimension_;}
     
 protected:
@@ -21,6 +21,15 @@ class LinearModel : public StateModel
 {
 public:
     LinearModel(double sigma);
+    void translateState(const double *src, double *dst);
+};
+
+// 等加速度運動モデル
+class AccelerateModel : public StateModel
+{
+public:
+    AccelerateModel(double sigma);
+    void translateState(const double *src, double *dst);
 };
 
 // ランダムウォークモデル
@@ -28,6 +37,7 @@ class RandomModel : public StateModel
 {
 public:
     RandomModel(double sigma);
+    void translateState(const double *src, double *dst);
 };
 
 // パーティクルフィルタクラス
@@ -41,8 +51,9 @@ public:
     void predict();
     void normalizeLikelihood();
     void estimate();
-    void filterParticles();
+    void resample();
     void resampleMultinomial();
+    void resampleResidual();
     
     inline int dimension() const {return model_->dimension();}
     
