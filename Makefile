@@ -11,7 +11,7 @@ SRCDIR = ./src
 
 TARGET1 = $(EXEDIR)/pftracking
 
-OBJ1 = $(OBJDIR)/pftracking.o $(OBJDIR)/particlefilter.o $(OBJDIR)/mlutility.o
+OBJ1 = $(OBJDIR)/pftracking.o $(OBJDIR)/particlefilter.o $(OBJDIR)/statlib.o
 
 all: $(TARGET1)
 
@@ -24,7 +24,7 @@ $(OBJDIR)/pftracking.o: $(SRCDIR)/pftracking.cpp
 $(OBJDIR)/particlefilter.o: $(SRCDIR)/particlefilter.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR)/mlutility.o: $(SRCDIR)/mlutility.cpp
+$(OBJDIR)/statlib.o: $(SRCDIR)/statlib.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
