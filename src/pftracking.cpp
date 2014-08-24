@@ -90,12 +90,12 @@ int main(int argc, char *argv[])
     
     int particleNum = 1000;
     
-    //StateModel *model = new RandomModel(10.0);
-    StateModel *model = new LinearModel(3.0);
-    //StateModel *model = new AccelerateModel(0.5);
-    ParticleFilter filter(particleNum, model);
-    double **boundary = new double*[model->dimension()];
-    for (int i = 0; i < model->dimension(); ++i) {
+    LinearModel model(3.0);
+    //AccelerateModel model(0.5);
+    //RandomModel model(10.0);
+    ParticleFilter filter(particleNum, &model);
+    double **boundary = new double*[model.dimension()];
+    for (int i = 0; i < model.dimension(); ++i) {
 	boundary[i] = new double[2];
     }
     boundary[0][0] = 0.0;
@@ -162,11 +162,10 @@ int main(int argc, char *argv[])
 	filter.resampleResidual();
     }
     
-    for (int i = 0; i < model->dimension(); ++i) {
+    for (int i = 0; i < model.dimension(); ++i) {
 	delete[] boundary[i];
     }
     delete[] boundary;
-    delete model;
     
     return 0;
 }
