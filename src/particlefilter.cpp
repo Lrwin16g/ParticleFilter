@@ -60,24 +60,18 @@ AccelerateModel::AccelerateModel(double sigma)
     for (int i = 0; i < dimension_; ++i) {
 	stateTransMat_[i] = new double[dimension_];
     }
-    stateTransMat_[0][0] = 1.0; stateTransMat_[0][1] = 0.0;
-    stateTransMat_[0][2] = 1.0; stateTransMat_[0][3] = 0.0;
-    stateTransMat_[0][4] = 0.0; stateTransMat_[0][5] = 0.0;
-    stateTransMat_[1][0] = 0.0; stateTransMat_[1][1] = 1.0;
-    stateTransMat_[1][2] = 0.0; stateTransMat_[1][3] = 1.0;
-    stateTransMat_[1][4] = 0.0; stateTransMat_[1][5] = 0.0;
-    stateTransMat_[2][0] = 0.0; stateTransMat_[2][1] = 0.0;
-    stateTransMat_[2][2] = 1.0; stateTransMat_[2][3] = 0.0;
-    stateTransMat_[2][4] = 1.0; stateTransMat_[2][5] = 0.0;
-    stateTransMat_[3][0] = 0.0; stateTransMat_[3][1] = 0.0;
-    stateTransMat_[3][2] = 0.0; stateTransMat_[3][3] = 1.0;
-    stateTransMat_[3][4] = 0.0; stateTransMat_[3][5] = 1.0;
-    stateTransMat_[4][0] = 0.0; stateTransMat_[4][1] = 0.0;
-    stateTransMat_[4][2] = 0.0; stateTransMat_[4][3] = 0.0;
-    stateTransMat_[4][4] = 1.0; stateTransMat_[4][5] = 0.0;
-    stateTransMat_[5][0] = 0.0; stateTransMat_[5][1] = 0.0;
-    stateTransMat_[5][2] = 0.0; stateTransMat_[5][3] = 0.0;
-    stateTransMat_[5][4] = 0.0; stateTransMat_[5][5] = 1.0;
+    stateTransMat_[0][0] = 1.0; stateTransMat_[0][1] = 0.0; stateTransMat_[0][2] = 1.0;
+    stateTransMat_[0][3] = 0.0; stateTransMat_[0][4] = 0.0; stateTransMat_[0][5] = 0.0;
+    stateTransMat_[1][0] = 0.0; stateTransMat_[1][1] = 1.0; stateTransMat_[1][2] = 0.0;
+    stateTransMat_[1][3] = 1.0; stateTransMat_[1][4] = 0.0; stateTransMat_[1][5] = 0.0;
+    stateTransMat_[2][0] = 0.0; stateTransMat_[2][1] = 0.0; stateTransMat_[2][2] = 1.0;
+    stateTransMat_[2][3] = 0.0; stateTransMat_[2][4] = 1.0; stateTransMat_[2][5] = 0.0;
+    stateTransMat_[3][0] = 0.0; stateTransMat_[3][1] = 0.0; stateTransMat_[3][2] = 0.0;
+    stateTransMat_[3][3] = 1.0; stateTransMat_[3][4] = 0.0; stateTransMat_[3][5] = 1.0;
+    stateTransMat_[4][0] = 0.0; stateTransMat_[4][1] = 0.0; stateTransMat_[4][2] = 0.0;
+    stateTransMat_[4][3] = 0.0; stateTransMat_[4][4] = 1.0; stateTransMat_[4][5] = 0.0;
+    stateTransMat_[5][0] = 0.0; stateTransMat_[5][1] = 0.0; stateTransMat_[5][2] = 0.0;
+    stateTransMat_[5][3] = 0.0; stateTransMat_[5][4] = 0.0; stateTransMat_[5][5] = 1.0;
 }
 
 void AccelerateModel::translateState(const double *src, double *dst)
