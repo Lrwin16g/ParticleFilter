@@ -5,7 +5,7 @@
 #include <cmath>
 #include <ctime>
 
-#include "mlutility.h"
+#include "statlib.h"
 
 StateModel::StateModel(double sigma)
     : sigma_(sigma), stateTransMat_(NULL)
@@ -48,8 +48,8 @@ void LinearModel::translateState(const double *src, double *dst)
 	    dst[i] += stateTransMat_[i][j] * src[j];
 	}
     }
-    dst[2] += ml::randn(0.0, sigma_);
-    dst[3] += ml::randn(0.0, sigma_);
+    dst[2] += stat::randn(0.0, sigma_);
+    dst[3] += stat::randn(0.0, sigma_);
 }
 
 AccelerateModel::AccelerateModel(double sigma)
@@ -88,8 +88,8 @@ void AccelerateModel::translateState(const double *src, double *dst)
 	    dst[i] += stateTransMat_[i][j] * src[j];
 	}
     }
-    dst[4] += ml::randn(0.0, sigma_);
-    dst[5] += ml::randn(0.0, sigma_);
+    dst[4] += stat::randn(0.0, sigma_);
+    dst[5] += stat::randn(0.0, sigma_);
 }
 
 RandomModel::RandomModel(double sigma)
@@ -107,7 +107,7 @@ RandomModel::RandomModel(double sigma)
 void RandomModel::translateState(const double *src, double *dst)
 {
     for (int i = 0; i < dimension_; ++i) {
-	dst[i] = ml::randn(0.0, sigma_);
+	dst[i] = stat::randn(0.0, sigma_);
 	for (int j = 0; j < dimension_; ++j) {
 	    dst[i] += stateTransMat_[i][j] * src[j];
 	}
@@ -163,7 +163,7 @@ void ParticleFilter::initParticles(double *boundary[2])
 {
     for (int i = 0; i < particleNum_; ++i) {
 	for (int j = 0; j < model_->dimension(); ++j) {
-	    particles_[i][j] = ml::randu(boundary[j][0], boundary[j][1]);
+	    particles_[i][j] = stat::randu(boundary[j][0], boundary[j][1]);
 	    newParticles_[i][j] = particles_[i][j];
 	}
     }
@@ -255,7 +255,7 @@ void ParticleFilter::resampleMultinomial()
     }
     
     for (int i = 0; i < particleNum_; ++i) {
-	double prob = ml::randu(0.0, 1.0);
+	double prob = stat::randu(0.0, 1.0);
 	int index = 0;
 	while (multidist_[++index] < prob) {
 	    ;
@@ -283,7 +283,7 @@ void ParticleFilter::resampleResidual()
     }
     
     for (int i = count; i < particleNum_; ++i) {
-	double prob = ml::randu(0.0, 1.0);
+	double prob = stat::randu(0.0, 1.0);
 	int index = 0;
 	while (multidist_[++index] < prob) {
 	    ;
