@@ -14,6 +14,11 @@ protected:
     int dimension_;
     double **stateTransMat_;
     double sigma_;
+    
+private:
+    // DISALLOW_COPY_AND_ASSIGN
+    StateModel(const StateModel&);
+    void operator=(const StateModel&);
 };
 
 // 等速直線運動モデル
@@ -55,19 +60,12 @@ public:
     void resampleMultinomial();
     void resampleResidual();
     
-    inline int dimension() const {return model_->dimension();}
+    inline int    dimension() const			{return model_->dimension();}
+    inline double particles(int row, int col) const	{return particles_[row][col];}
+    inline double likelihood(int index) const		{return likelihood_[index];}
+    inline double estimateResult(int index) const	{return estimateResult_[index];}
     
-    inline double particles(int row, int col) const
-	{return particles_[row][col];}
-    
-    inline double likelihood(int index) const
-	{return likelihood_[index];}
-    
-    inline void setLikelihood(int index, double value)
-	{likelihood_[index] = value;}
-    
-    inline double estimateResult(int index) const
-	{return estimateResult_[index];}
+    inline void setLikelihood(int index, double value)	{likelihood_[index] = value;}
     
 private:
     int particleNum_;
