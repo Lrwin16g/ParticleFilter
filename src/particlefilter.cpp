@@ -110,16 +110,16 @@ void RandomModel::translateState(const double *src, double *dst)
 
 ParticleFilter::ParticleFilter(int particleNum, StateModel *model)
     : particleNum_(particleNum), model_(model), particles_(NULL),
-      newParticles_(NULL), likelihood_(NULL), estimateResult_(NULL),
+      updateParticles_(NULL), likelihood_(NULL), estimateResult_(NULL),
       multidist_(NULL)
 {
     srand(time(NULL));
     
     particles_ = new double*[particleNum];
-    newParticles_ = new double*[particleNum];
+    updateParticles_ = new double*[particleNum];
     for (int i = 0; i < particleNum_; ++i) {
 	particles_[i] = new double[model_->dimension()];
-	newParticles_[i] = new double[model_->dimension()];
+	updateParticles_[i] = new double[model_->dimension()];
     }
 
     likelihood_ = new double[particleNum_];
@@ -135,11 +135,11 @@ ParticleFilter::~ParticleFilter()
 	}
 	delete[] particles_;
     }
-    if (newParticles_ != NULL) {
+    if (updateParticles_ != NULL) {
 	for (int i = 0; i < particleNum_; ++i) {
-	    delete[] newParticles_[i];
+	    delete[] updateParticles_[i];
 	}
-	delete[] newParticles_;
+	delete[] updateParticles_;
     }
     if (likelihood_ != NULL) {
 	delete[] likelihood_;
@@ -158,7 +158,7 @@ void ParticleFilter::initParticles(const double boundary[][2])
     for (int i = 0; i < particleNum_; ++i) {
 	for (int j = 0; j < model_->dimension(); ++j) {
 	    particles_[i][j] = stat::randu(boundary[j][0], boundary[j][1]);
-	    newParticles_[i][j] = particles_[i][j];
+	    updateParticles_[i][j] = particles_[i][j];
 	}
     }
 }
@@ -167,7 +167,7 @@ void ParticleFilter::initParticles(const double boundary[][2])
 void ParticleFilter::predict()
 {
     for (int i = 0; i < particleNum_; ++i) {
-	model_->translateState(newParticles_[i], particles_[i]);
+	model_->translateState(updateParticles_[i], particles_[i]);
     }
 }
 
@@ -214,7 +214,7 @@ void ParticleFilter::resample()
 	    int rest = particleNum_ - count - 1;
 	    for (int j = 0; j < rest; ++j) {
 		for (int k = 0; k < model_->dimension(); ++k) {
-		    newParticles_[count][k] = particles_[i][k];
+		    updateParticles_[count][k] = particles_[i][k];
 		}
 		count++;
 	    }
@@ -223,7 +223,7 @@ void ParticleFilter::resample()
 	// リサンプルの数だけサンプルを複製
 	for (int j = 0; j < restoreNum; ++j) {
 	    for (int k = 0; k < model_->dimension(); ++k) {
-		newParticles_[count][k] = particles_[i][k];
+		updateParticles_[count][k] = particles_[i][k];
 	    }
 	    count++;
 	}
@@ -234,7 +234,7 @@ void ParticleFilter::resample()
 	int rest = particleNum_ - count;
 	for (int i = 0; i < rest; ++i) {
 	    for (int j = 0; j < model_->dimension(); ++j) {
-		newParticles_[count + i][j] = particles_[maxIndex][j];
+		updateParticles_[count + i][j] = particles_[maxIndex][j];
 	    }
 	}
     }
@@ -255,7 +255,7 @@ void ParticleFilter::resampleMultinomial()
 	    ;
 	}
 	for (int j = 0; j < model_->dimension(); ++j) {
-	    newParticles_[i][j] = particles_[index][j];
+	    updateParticles_[i][j] = particles_[index][j];
 	}
     }
 }
@@ -270,7 +270,7 @@ void ParticleFilter::resampleResidual()
 	int restoreNum = floor(likelihood_[i] * particleNum_);
 	for (int j = 0; j < restoreNum; ++j) {
 	    for (int k = 0; k < model_->dimension(); ++k) {
-		newParticles_[count][k] = particles_[i][k];
+		updateParticles_[count][k] = particles_[i][k];
 	    }
 	    count++;
 	}
@@ -283,7 +283,7 @@ void ParticleFilter::resampleResidual()
 	    ;
 	}
 	for (int j = 0; j < model_->dimension(); ++j) {
-	    newParticles_[i][j] = particles_[index][j];
+	    updateParticles_[i][j] = particles_[index][j];
 	}
     }
 }

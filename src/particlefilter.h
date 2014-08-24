@@ -70,7 +70,7 @@ public:
 private:
     int particleNum_;
     double **particles_;
-    double **newParticles_;
+    double **updateParticles_;
     double *likelihood_;
     double *estimateResult_;
     double *multidist_;
