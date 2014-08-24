@@ -159,7 +159,7 @@ ParticleFilter::~ParticleFilter()
 }
 
 // サンプルの初期化
-void ParticleFilter::initParticles(double *boundary[2])
+void ParticleFilter::initParticles(double boundary[][2])
 {
     for (int i = 0; i < particleNum_; ++i) {
 	for (int j = 0; j < model_->dimension(); ++j) {

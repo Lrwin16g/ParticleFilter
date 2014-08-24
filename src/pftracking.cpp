@@ -94,22 +94,14 @@ int main(int argc, char *argv[])
     //AccelerateModel model(0.5);
     //RandomModel model(10.0);
     ParticleFilter filter(particleNum, &model);
-    double **boundary = new double*[model.dimension()];
-    for (int i = 0; i < model.dimension(); ++i) {
-	boundary[i] = new double[2];
-    }
-    boundary[0][0] = 0.0;
-    boundary[0][1] = frame.cols - 1;
-    boundary[1][0] = 0.0;
-    boundary[1][1] = frame.rows - 1;
-    boundary[2][0] = -3.0;
-    boundary[2][1] = 3.0;
-    boundary[3][0] = -3.0;
-    boundary[3][1] = 3.0;
-    /*boundary[4][0] = -1.0;
-    boundary[4][1] = 1.0;
-    boundary[5][0] = -1.0;
-    boundary[5][1] = 1.0;*/
+    
+    double boundary[6][2];
+    boundary[0][0] = 0.0;	boundary[0][1] = frame.cols - 1;
+    boundary[1][0] = 0.0;	boundary[1][1] = frame.rows - 1;
+    boundary[2][0] = -3.0;	boundary[2][1] = 3.0;
+    boundary[3][0] = -3.0;	boundary[3][1] = 3.0;
+    boundary[4][0] = -1.0;	boundary[4][1] = 1.0;
+    boundary[5][0] = -1.0;	boundary[5][1] = 1.0;
     
     // パーティクルの初期化
     filter.initParticles(boundary);
@@ -161,11 +153,6 @@ int main(int argc, char *argv[])
 	//filter.resampleMultinomial();
 	filter.resampleResidual();
     }
-    
-    for (int i = 0; i < model.dimension(); ++i) {
-	delete[] boundary[i];
-    }
-    delete[] boundary;
     
     return 0;
 }
