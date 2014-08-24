@@ -47,7 +47,7 @@ public:
     ParticleFilter(int particleNum, StateModel *model);
     ~ParticleFilter();
     
-    void initParticles(double boundary[][2]);
+    void initParticles(const double boundary[][2]);
     void predict();
     void normalizeLikelihood();
     void estimate();
